@@ -6,17 +6,80 @@ Overview
 ---
 In this project, I used deep neural networks and convolutional neural networks to clone driving behavior. To achieve reliable autonomous driving from the car I traine neural network that outputs a steering angle to an autonomous vehicle based on the images from the front camera.
 
+The Writeup
+---
+
+### Code
+
+My project includes the following files:
+
+ - model.py containing the script to create and train the model 
+ - drive.py for driving the car in autonomous mode 
+ - model.h5 containing a trained convolution neural network 
+ - README.md summarizing the results 
+ 
+In addition _data_ folder contains data samples that I acquired through simulation. 
+
+Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing
+```
+python drive.py model.h5
+```
+
+The _model.py_ file contains the code for training and saving the convolution neural network and can be executed with 
+```
+python model.py
+```
+
+###  Data Collection & Augmentation
+
+#### Image and telemetry capture
+
+To gather training data I used Udacity simulator in manual mode. By controlling speed and turning angle with keyboard and mouse I tried to keep car within the road boundaries. Simulator automatically recorded images captured by three front facing cameras and turning angle.
+
+For better generalization I also drove a few laps in opposite direction which gave me additional training data.
+
+#### Augmentations
+
+Even with several laps in forward and backward directions I could still get more training data for better training results by augmenting existing data. 
+
+First, I used images from front left and front right cameras as sets captured by central camera not forgetting to add compensation to turning angle measurements. This also gave me data for more extreme and mild turning scenarious on the track. As the results my dataset trippled in size.
+
+Secondly, I flipped every image horizontally and reversed turnging angle in the training data, giving me twice the data.
+
+In the end, through augmentations I got six times the size of original data for training purposes.
+
+To speed up training and avoid distractions on the images, I also cropped out top part of the images, where sky is, as it doesn't help with driving, and bottom part, where the car hood is, which doesn't change from image to image anyway.
+
+### Solution Design
+
+To design the final solution for this problem I tried using the simplest solution first and iteratively adding complexity and fixing problems later. 
+
+At first I used simplest neural network with only one fully-connected layer that outputs one feature (turning angle) and passed flattened images as inputs. Such network could keep car on the road only on the straight road, but it was enough to check that data inputs could be processed without problems and that simulator can be driven using resulting neural network model. 
+
+Next I replaced said network with the architecture copied from ["End to End Learning for Self-Driving Cars" by Nvidia research team](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf). 
+
+After attempting to train new network I faced the problem where validation error is randomly decreasing and increasing. To eliminate this unstable behavior I increased size of sample batches and decreased learning rate, which seemed to have fixed the problem. 
+
+However new network still couldn't drive on sharp turns and seemed as if it couldn't handle unexpected situations, which is a symptom of overfitting. 
+
+Next I tried adding Dropout layers before each computational layers (convolutions and dense). 
+
+I also tried to increase model accuracy by training longer with smaller learning rates. I did that by introducing exponential decay to learning rate, which automatically reduced learning rate as the training progressed. 
+
+All of these modifications allowed the car to pass half of the loop with occasional driving on the edge on the road. But it seemed that model avoided predicting big turning angles. I suspect that's because I tried driving as smoothly as possible. To fix this I added data from side cameras as described in data augmentation section, which added significantly more data with bigger turning angles. 
+
+Finally, model achieved driving car on its own thorugh the whole length of the loop, which can be seen in the [video](https://youtu.be/wZrne38rO3M).
+
+### Network Architecture
+
+
+
 The Project
 ---
 The goals / steps of this project are the following:
 * Use the simulator to collect data of good driving behavior 
 * Design, train and validate a model that predicts a steering angle from image data
 * Use the model to drive the vehicle autonomously around the first track in the simulator. The vehicle should remain on the road for an entire loop around the track.
-
-The Writeup
----
-
-
 
 ### Dependencies
 This lab requires:
