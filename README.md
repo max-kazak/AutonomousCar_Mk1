@@ -4,7 +4,9 @@
 
 Overview
 ---
-In this project, I used deep neural networks and convolutional neural networks to clone driving behavior. To achieve reliable autonomous driving from the car I traine neural network that outputs a steering angle to an autonomous vehicle based on the images from the front camera.
+In this project, I used deep neural networks and convolutional neural networks to clone driving behavior. To achieve reliable autonomous driving from the car I traine neural network that outputs a steering angle to an autonomous vehicle based on the images from the front camera. 
+
+The resulted video can be found [here](https://youtu.be/wZrne38rO3M).
 
 The Writeup
 ---
@@ -50,6 +52,10 @@ In the end, through augmentations I got six times the size of original data for 
 
 To speed up training and avoid distractions on the images, I also cropped out top part of the images, where sky is, as it doesn't help with driving, and bottom part, where the car hood is, which doesn't change from image to image anyway.
 
+#### Avoiding bias  
+
+All the gathered data was split into training/validation subsets with 80/20 ratio. Furthermore, sets were shuffled after each epoch. 
+
 ### Solution Design
 
 To design the final solution for this problem I tried using the simplest solution first and iteratively adding complexity and fixing problems later. 
@@ -70,9 +76,70 @@ All of these modifications allowed the car to pass half of the loop with occasio
 
 Finally, model achieved driving car on its own thorugh the whole length of the loop, which can be seen in the [video](https://youtu.be/wZrne38rO3M).
 
-### Network Architecture
+### Training
 
+#### Neural Network Architecture 
 
+Following is the final architecture used for model training: 
+
+```
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+cropping2d_1 (Cropping2D)    (None, 65, 320, 3)        0         
+_________________________________________________________________
+lambda_1 (Lambda)            (None, 65, 320, 3)        0         
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 31, 158, 24)       1824      
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 31, 158, 24)       0         
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 14, 77, 36)        21636     
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 14, 77, 36)        0         
+_________________________________________________________________
+conv2d_3 (Conv2D)            (None, 5, 37, 48)         43248     
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 5, 37, 48)         0         
+_________________________________________________________________
+conv2d_4 (Conv2D)            (None, 3, 35, 64)         27712     
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 3, 35, 64)         0         
+_________________________________________________________________
+conv2d_5 (Conv2D)            (None, 1, 33, 64)         36928     
+_________________________________________________________________
+dropout_5 (Dropout)          (None, 1, 33, 64)         0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 2112)              0         
+_________________________________________________________________
+dropout_6 (Dropout)          (None, 2112)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 100)               211300    
+_________________________________________________________________
+dropout_7 (Dropout)          (None, 100)               0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 50)                5050      
+_________________________________________________________________
+dropout_8 (Dropout)          (None, 50)                0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 10)                510       
+_________________________________________________________________
+dense_4 (Dense)              (None, 1)                 11        
+=================================================================
+Total params: 348,219
+Trainable params: 348,219
+Non-trainable params: 0
+```
+
+#### Hyperparameters 
+
+The training hyperparameters that I tuned for my project include: 
+
+ - Initial learning rate = 0.01 
+ - Learning rate decay = 0.1 
+ - Dropout rate = 0.3 
+ - Batch size = 64 
+ - Epochs number = 15 
 
 The Project
 ---
