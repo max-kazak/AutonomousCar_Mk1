@@ -6,7 +6,7 @@ Overview
 ---
 In this project, I used deep neural networks and convolutional neural networks to clone driving behavior. To achieve reliable autonomous driving from the car I traine neural network that outputs a steering angle to an autonomous vehicle based on the images from the front camera. 
 
-The resulted video can be found [here](https://youtu.be/wZrne38rO3M).
+The resulted video can be found [here (YouTube)](https://youtu.be/wZrne38rO3M) or [here](video.mp4).
 
 The Writeup
 ---
